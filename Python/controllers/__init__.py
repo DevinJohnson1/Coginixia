@@ -3,7 +3,7 @@ Customer controller with FastAPI routes
 """
 from fastapi import APIRouter, HTTPException
 from models import CustomerIn, CustomerOut
-from customer_service import CustomerService
+from services import CustomerService
 
 # Create a router for customer endpoints
 router = APIRouter(prefix="/api/customers", tags=["customers"])
@@ -26,7 +26,7 @@ class CustomerController:
         """Setup all customer routes."""
         router.post("", response_model=CustomerOut, status_code=201)(self.create_customer)
         router.get("", response_model=list[CustomerOut])(self.get_all_customers)
-        router.get("/salary/min/{customer_salary}", response_model=list[CustomerOut])(self.get_salary_minimum)
+        router.get("/balance/min/{balance}", response_model=list[CustomerOut])(self.get_balance_minimum)
         router.get("/{customer_id}", response_model=CustomerOut)(self.get_customer)
         router.put("/{customer_id}", response_model=CustomerOut)(self.update_customer)
         router.delete("/{customer_id}", status_code=204)(self.delete_customer)
@@ -34,7 +34,7 @@ class CustomerController:
     # POST
     # endpoint: /api/customers
     # Full URL: http://localhost:8000/api/customers OR "BaseURL/api/customers"
-    # Returns: CustomerOut (single customer object with id, name, salary)
+    # Returns: CustomerOut (single customer object with id, name, account)
     async def create_customer(self, customer_in: CustomerIn) -> CustomerOut:
         """
         Create a new customer.
@@ -48,27 +48,27 @@ class CustomerController:
         return self.service.create_customer(customer_in)
 
     # GET
-    # endpoint: /api/customers/min/salary/n
-    # Full URL: http://localhost:8000/api/customers/min/salary/n OR "BaseURL/api/customers/min/salary/n"
-    # Returns: list[CustomerOut] (array of customer objects) with minimum salary threshold n.
-    async def get_salary_minimum(self, customer_salary: float) -> list[CustomerOut]:
+    # endpoint: /api/customers/balance/min/n
+    # Full URL: http://localhost:8000/api/customers/balance/min/n OR "BaseURL/api/customers/balance/min/n"
+    # Returns: list[CustomerOut] (array of customer objects) with minimum account balance of n.
+    async def get_balance_minimum(self, balance: float) -> list[CustomerOut]:
         """
-        Get all customers with a specified minimum salary or higher.
+        Get all customers with a specified minimum account balance or higher.
 
         Args:
-            customer_salary: The minimum salary threshold
+            balance: The minimum balance threshold
 
         Returns:
-            List of all customers with a salary equal to or higher than the threshold.
+            List of all customers with an account balance equal to or higher than the threshold.
 
         Raises:
-            HTTPException: If no customers found with specified minimum salary or higher
+            HTTPException: If no customers found with specified minimum balance or higher
         """
-        customers = self.service.get_salary_minimum(customer_salary)
+        customers = self.service.get_salary_minimum(balance)
         if not customers:
             raise HTTPException(
                 status_code=404,
-                detail=f"No customers found with minimum salary of {customer_salary} or higher",
+                detail=f"No customers found with minimum account balance of ${balance} or higher",
             )
         return customers
 
@@ -89,7 +89,7 @@ class CustomerController:
     # GET
     # endpoint: /api/customers/{customer_id}
     # Full URL: http://localhost:8000/api/customers/{id} OR "BaseURL/api/customers/{id}"
-    # Returns: CustomerOut (single customer object with id, name, salary)
+    # Returns: CustomerOut (single customer object with id, name, account)
     async def get_customer(self, customer_id: int) -> CustomerOut:
         """
         Get a customer by ID.
@@ -113,7 +113,7 @@ class CustomerController:
     # PUT
     # endpoint: /api/customers/{customer_id}
     # Full URL: http://localhost:8000/api/customers/{id} OR "BaseURL/api/customers/{id}"
-    # Returns: CustomerOut (updated customer object with id, name, salary)
+    # Returns: CustomerOut (updated customer object with id, name, account)
     async def update_customer(
         self, customer_id: int, customer_in: CustomerIn
     ) -> CustomerOut:
@@ -156,11 +156,4 @@ class CustomerController:
             raise HTTPException(
                 status_code=404, detail=f"Customer with id {customer_id} not found"
             )
-
-
-
-
-
-
-
 

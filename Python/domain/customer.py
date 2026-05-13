@@ -1,23 +1,24 @@
 """
 Customer domain class with constructor, getters, and setters
 """
+from domain.account import Account
 
 
 class Customer:
     """Represents a customer entity."""
 
-    def __init__(self, id: int, name: str, salary: float):
+    def __init__(self, id: int, name: str, account: Account):
         """
         Constructor for Customer.
 
         Args:
             id: Unique customer identifier
             name: Customer's name
-            salary: Customer's salary
+            account: Customer's account information
         """
         self._id = id
         self._name = name
-        self._salary = salary
+        self._account = account
 
     # Getters
     def get_id(self) -> int:
@@ -28,9 +29,9 @@ class Customer:
         """Get customer name."""
         return self._name
 
-    def get_salary(self) -> float:
-        """Get customer salary."""
-        return self._salary
+    def get_account(self) -> Account:
+        """Get customer account."""
+        return self._account
 
     # Setters
     def set_id(self, id: int) -> None:
@@ -41,15 +42,15 @@ class Customer:
         """Set customer name."""
         self._name = name
 
-    def set_salary(self, salary: float) -> None:
-        """Set customer salary."""
-        self._salary = salary
+    def set_account(self, account: Account) -> None:
+        """Set customer account."""
+        self._account = account
 
     def to_dict(self) -> dict:
         """Convert customer to dictionary."""
         return {
             "id": self._id,
             "name": self._name,
-            "salary": self._salary,
+            "account": self._account.to_dict(),
         }
 
