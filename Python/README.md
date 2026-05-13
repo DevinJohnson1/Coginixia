@@ -1,7 +1,7 @@
-# Hello World + Users API — FastAPI Beginner Project
+# Customers RESTful API — FastAPI with Structured Architecture
 
-A minimal REST API built with FastAPI for learning purposes.  
-Everything lives in a **single file** (`main.py`) with no real database.
+A RESTful API built with FastAPI featuring a clean separation of concerns.  
+Includes models, repository, service, and controller layers.
 
 ---
 
@@ -9,8 +9,13 @@ Everything lives in a **single file** (`main.py`) with no real database.
 
 ```
 Python/
-├── main.py           # The entire application
-└── requirements.txt  # Python dependencies
+├── main.py                  # FastAPI application entry point
+├── customer.py              # Customer domain model (constructor, getters, setters)
+├── models.py                # Pydantic validation models (CustomerIn, CustomerOut)
+├── customer_repo.py         # Repository layer for data persistence
+├── customer_service.py      # Service layer for business logic
+├── customer_controller.py   # Controller layer with API routes
+└── requirements.txt         # Python dependencies
 ```
 
 ---
@@ -64,115 +69,186 @@ uvicorn main:app --reload
 
 | What               | URL                          |
 |--------------------|------------------------------|
-| App root           | http://127.0.0.1:8000        |
-| Interactive Swagger UI | http://127.0.0.1:8000/docs |
-| Alternative ReDoc  | http://127.0.0.1:8000/redoc  |
+| App root           | http://localhost:8000        |
+| Interactive Swagger UI | http://localhost:8000/docs |
+| Alternative ReDoc  | http://localhost:8000/redoc  |
 
-The `--reload` flag makes the server restart automatically whenever you save `main.py` — great for development.
+The `--reload` flag makes the server restart automatically whenever you save files — great for development.
 
 ---
 
 ## API Endpoints
 
-| Method | Path     | Description        |
-|--------|----------|--------------------|
-| GET    | `/`      | Hello World        |
-| POST   | `/users` | Create a new user  |
-| GET    | `/users` | List all users     |
+| Method | Path                    | Description              |
+|--------|-------------------------|--------------------------|
+| GET    | `/`                     | Health check             |
+| POST   | `/customers`            | Create a new customer    |
+| GET    | `/customers`            | List all customers       |
+| GET    | `/customers/{id}`       | Get a specific customer  |
+| PUT    | `/customers/{id}`       | Update a customer        |
+| DELETE | `/customers/{id}`       | Delete a customer        |
+
+Each endpoint is fully documented in `customer_controller.py` with HTTP method, endpoint path, full URL format, and return type information.
 
 ---
 
 ## Sample curl Commands
 
-### Hello World
+### Health Check
 ```bash
-curl http://127.0.0.1:8000/
+curl http://localhost:8000/
 ```
 
-### Create a user (POST /users)
+### Create a Customer (POST /customers)
 ```bash
-curl -X POST http://127.0.0.1:8000/users \
+curl -X POST http://localhost:8000/customers \
      -H "Content-Type: application/json" \
-     -d '{"name": "Alice", "email": "alice@example.com"}'
+     -d '{"name": "Alice Johnson", "salary": 75000}'
 ```
 
-**Windows PowerShell equivalent:**
-```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/users `
-  -ContentType "application/json" `
-  -Body '{"name": "Alice", "email": "alice@example.com"}'
-```
-
-### List all users (GET /users)
+### List All Customers (GET /customers)
 ```bash
-curl http://127.0.0.1:8000/users
+curl http://localhost:8000/customers
+```
+
+### Get a Specific Customer (GET /customers/1)
+```bash
+curl http://localhost:8000/customers/1
+```
+
+### Update a Customer (PUT /customers/1)
+```bash
+curl -X PUT http://localhost:8000/customers/1 \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Alice Johnson", "salary": 80000}'
+```
+
+### Delete a Customer (DELETE /customers/1)
+```bash
+curl -X DELETE http://localhost:8000/customers/1
 ```
 
 ---
 
 ## Example Request & Response
 
-### POST /users
+### POST /customers
 
-**Request JSON**
+**Request:**
 ```json
 {
-  "name": "Alice",
-  "email": "alice@example.com"
+  "name": "Alice Johnson",
+  "salary": 75000
 }
 ```
 
-**Response JSON** (HTTP 201 Created)
+**Response (HTTP 201 Created):**
 ```json
 {
   "id": 1,
-  "name": "Alice",
-  "email": "alice@example.com"
+  "name": "Alice Johnson",
+  "salary": 75000
 }
 ```
 
-### GET /users
+### GET /customers
 
-**Response JSON** (HTTP 200 OK)
+**Response (HTTP 200 OK):**
 ```json
 [
   {
     "id": 1,
-    "name": "Alice",
-    "email": "alice@example.com"
+    "name": "Alice Johnson",
+    "salary": 75000
   },
   {
     "id": 2,
-    "name": "Bob",
-    "email": "bob@example.com"
+    "name": "Bob Smith",
+    "salary": 65000
   }
 ]
 ```
 
+### GET /customers/1
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "id": 1,
+  "name": "Alice Johnson",
+  "salary": 75000
+}
+```
+
+### PUT /customers/1
+
+**Request:**
+```json
+{
+  "name": "Alice Johnson",
+  "salary": 80000
+}
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "id": 1,
+  "name": "Alice Johnson",
+  "salary": 80000
+}
+```
+
+### DELETE /customers/1
+
+**Response (HTTP 204 No Content)** — No body returned
+
 ---
 
-## How It Works — Plain English
+## Customer Model
 
-### How does POST /users work?
-1. Your HTTP client sends a JSON body (`name` + `email`) to `/users`.
-2. FastAPI reads the JSON and validates it against the `UserIn` model (powered by Pydantic).  
-   If a required field is missing or the wrong type, FastAPI automatically returns a `422 Unprocessable Entity` error — no extra code needed.
-3. The code assigns the next available `id`, builds a dict, and appends it to `users_db` (a plain Python list).
-4. The new user dict is returned as JSON with HTTP status `201 Created`.
+Each customer has the following attributes:
 
-### Where is the data stored?
-In a **Python list in memory** (`users_db = []` in `main.py`).  
-There is no file, no database, no disk — the list lives only while the server process is running.
+- **id** (integer): Unique identifier, auto-generated
+- **name** (string): Customer's full name
+- **salary** (float): Customer's salary
 
-### Why is this NOT production-ready?
+---
 
-| Problem | Reason |
-|---------|--------|
-| **No persistence** | All data is lost when the server restarts. |
-| **No real database** | A real app would use PostgreSQL, MySQL, SQLite, etc. |
-| **No authentication** | Anyone can create or read users. |
-| **No input validation beyond types** | Email format is not verified. |
-| **No duplicate checking** | You can add the same email twice. |
-| **Single process / no concurrency safety** | The `next_id` counter would break under multiple workers. |
+## Architecture Overview
 
-This project is intentionally simple so you can focus on **how FastAPI works** before adding those layers.
+This project follows a **clean layered architecture** pattern for maintainability and scalability:
+
+### 1. **Customer Domain Model** (`customer.py`)
+- Core business entity representing a customer
+- Constructor with `id`, `name`, and `salary` parameters
+- Getter methods: `get_id()`, `get_name()`, `get_salary()`
+- Setter methods: `set_id()`, `set_name()`, `set_salary()`
+- Helper method: `to_dict()` for serialization
+
+### 2. **Pydantic Models** (`models.py`)
+- `CustomerIn`: Validation schema for incoming requests (name, salary required)
+- `CustomerOut`: Schema for API responses (id, name, salary)
+- Automatic type validation and error handling
+
+### 3. **Repository Layer** (`customer_repo.py`)
+- Handles all data persistence operations
+- In-memory dictionary storage with auto-incrementing IDs
+- Methods: `create()`, `find_by_id()`, `find_all()`, `update()`, `delete()`
+
+### 4. **Service Layer** (`customer_service.py`)
+- Implements business logic and workflows
+- Bridges domain objects and Pydantic models
+- All CRUD operations here
+
+### 5. **Controller Layer** (`customer_controller.py`)
+- Defines all API routes and HTTP endpoints
+- Each method includes comments with HTTP verb, endpoint path, full URL, and return type
+- Handles request/response mapping and error handling with appropriate HTTP status codes
+- Routes: POST, GET (all), GET (by id), PUT, DELETE
+
+### 6. **Main Application** (`main.py`)
+- Initializes FastAPI app instance
+- Wires up repository → service → controller dependencies
+- Registers customer router with all endpoints
+- Includes health check endpoint
