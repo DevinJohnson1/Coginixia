@@ -1,4 +1,4 @@
-package mypack;
+package simple;
 import java.util.*;
 
 class Department {
