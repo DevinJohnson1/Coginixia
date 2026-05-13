@@ -87,8 +87,6 @@ uvicorn main:app --reload
 | Interactive Swagger UI | http://localhost:8000/docs |
 | Alternative ReDoc  | http://localhost:8000/redoc  |
 
-The `--reload` flag makes the server restart automatically whenever you save files — great for development.
-
 ---
 
 ## API Endpoints
@@ -98,7 +96,7 @@ The `--reload` flag makes the server restart automatically whenever you save fil
 | GET    | `/`                            | Health check                         |
 | POST   | `/api/customers`               | Create a new customer                |
 | GET    | `/api/customers`               | List all customers                   |
-| **GET**    | **`/api/customers/premium`**       | **Get premium customers (balance > $10,000)** ⭐ |
+| GET    | `/api/customers/premium`       | Get premium customers (balance > $10,000)|
 | GET    | `/api/customers/balance/min/n` | Find customers with minimum balance  |
 | GET    | `/api/customers/{id}`          | Get a specific customer              |
 | PUT    | `/api/customers/{id}`          | Update a customer                    |
@@ -154,7 +152,7 @@ curl http://localhost:8000/api/customers
 curl http://localhost:8000/api/customers/1
 ```
 
-### Get Premium Customers (GET /api/customers/premium) ⭐
+### Get Premium Customers (GET /api/customers/premium)
 ```bash
 curl http://localhost:8000/api/customers/premium
 ```
@@ -181,111 +179,6 @@ curl -X PUT http://localhost:8000/api/customers/1 \
 ```bash
 curl -X DELETE http://localhost:8000/api/customers/1
 ```
-
----
-
-## Example Request & Response
-
-### POST /api/customers
-
-**Request:**
-```json
-{
-  "name": "Alice Johnson",
-  "account": {
-    "account_type": "savings",
-    "balance": 75000
-  }
-}
-```
-
-**Response** (HTTP 201 Created):
-```json
-{
-  "id": 1,
-  "name": "Alice Johnson",
-  "account": {
-    "id": 1,
-    "account_type": "savings",
-    "balance": 75000
-  }
-}
-```
-
-### GET /api/customers
-
-**Response** (HTTP 200 OK):
-```json
-[
-  {
-    "id": 1,
-    "name": "Alice Johnson",
-    "account": {
-      "id": 1,
-      "account_type": "savings",
-      "balance": 75000
-    }
-  },
-  {
-    "id": 2,
-    "name": "Bob Smith",
-    "account": {
-      "id": 2,
-      "account_type": "checking",
-      "balance": 65000
-    }
-  }
-]
-```
-
-### GET /api/customers/1
-
-**Response** (HTTP 200 OK):
-```json
-{
-  "id": 1,
-  "name": "Alice Johnson",
-  "account": {
-    "id": 1,
-    "account_type": "savings",
-    "balance": 75000
-  }
-}
-```
-
-### PUT /api/customers/1
-
-**Request:**
-```json
-{
-  "name": "Alice Johnson",
-  "account": {
-    "account_type": "savings",
-    "balance": 80000
-  }
-}
-```
-
-**Response** (HTTP 200 OK):
-```json
-{
-  "id": 1,
-  "name": "Alice Johnson",
-  "account": {
-    "id": 1,
-    "account_type": "savings",
-    "balance": 80000
-  }
-}
-```
-
-### DELETE /api/customers/1
-
-**Response** (HTTP 204 No Content):
-```
-(empty body)
-```
-
 ---
 
 ## Architecture Overview
@@ -322,32 +215,3 @@ This project follows a **clean layered architecture** pattern with separation be
 - Wires up repository, service, and controller dependencies
 - Registers routes
 - Populates 5 default customers with accounts (mix of savings and checking accounts)
-
----
-
-## 🌟 Premium Customers Feature
-
-### What is Premium?
-A customer is considered **premium** if their account balance exceeds **$10,000**.
-
-### Premium Endpoint
-```
-GET /api/customers/premium
-```
-
-### Default Premium Customers
-All 5 default customers are premium members:
-- Alice Johnson (Savings) - $75,000
-- Bob Smith (Checking) - $65,000
-- Carol Martinez (Savings) - $85,000
-- David Lee (Checking) - $70,000
-- Emma Wilson (Savings) - $80,000
-
-### Query Premium Customers
-```bash
-curl http://localhost:8000/api/customers/premium
-```
-
-Response includes all customers with balance > $10,000 or returns 404 if none found.
-
----
