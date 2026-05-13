@@ -1,3 +1,4 @@
+
 # Customers RESTful API — FastAPI with Structured Architecture
 
 A RESTful API built with FastAPI featuring a clean separation of concerns.  
@@ -9,15 +10,26 @@ Includes models, repository, service, and controller layers for both Customer an
 
 ```
 Python/
-├── main.py                  # FastAPI application entry point
-├── customer.py              # Customer domain model (constructor, getters, setters)
-├── account.py               # Account domain model (constructor, getters, setters)
-├── models.py                # Pydantic validation models (CustomerIn, CustomerOut, AccountIn, AccountOut)
-├── customer_repo.py         # Repository layer for customer data persistence
-├── account_repo.py          # Repository layer for account data persistence
-├── customer_service.py      # Service layer for customer business logic
-├── customer_controller.py   # Controller layer with API routes
-└── requirements.txt         # Python dependencies
+├── main.py                          # FastAPI application entry point
+├── requirements.txt                 # Python dependencies
+│
+├── domain/                          # Domain Models Layer
+│   ├── __init__.py
+│   ├── customer.py                  # Customer entity (constructor, getters, setters)
+│   └── account.py                   # Account entity (constructor, getters, setters)
+│
+├── models/                          # Pydantic Validation Layer
+│   └── __init__.py                  # CustomerIn/Out, AccountIn/Out
+│
+├── repo/                            # Repository/Data Persistence Layer
+│   ├── __init__.py                  # CustomerRepo (CRUD operations)
+│   └── account_repo.py              # AccountRepo (CRUD operations)
+│
+├── services/                        # Service/Business Logic Layer
+│   └── __init__.py                  # CustomerService (orchestration & logic)
+│
+└── controllers/                     # Controller/API Routes Layer
+    └── __init__.py                  # CustomerController with all routes
 ```
 
 ---
@@ -81,15 +93,16 @@ The `--reload` flag makes the server restart automatically whenever you save fil
 
 ## API Endpoints
 
-| Method | Path                           | Description                     |
-|--------|--------------------------------|---------------------------------|
-| GET    | `/`                            | Health check                    |
-| POST   | `/api/customers`               | Create a new customer           |
-| GET    | `/api/customers`               | List all customers              |
-| GET    | `/api/customers/{id}`          | Get a specific customer         |
-| GET    | `/api/customers/balance/min/n` | Find customers with min balance |
-| PUT    | `/api/customers/{id}`          | Update a customer               |
-| DELETE | `/api/customers/{id}`          | Delete a customer               |
+| Method | Path                           | Description                          |
+|--------|--------------------------------|--------------------------------------|
+| GET    | `/`                            | Health check                         |
+| POST   | `/api/customers`               | Create a new customer                |
+| GET    | `/api/customers`               | List all customers                   |
+| **GET**    | **`/api/customers/premium`**       | **Get premium customers (balance > $10,000)** ⭐ |
+| GET    | `/api/customers/balance/min/n` | Find customers with minimum balance  |
+| GET    | `/api/customers/{id}`          | Get a specific customer              |
+| PUT    | `/api/customers/{id}`          | Update a customer                    |
+| DELETE | `/api/customers/{id}`          | Delete a customer                    |
 
 ---
 
@@ -139,6 +152,11 @@ curl http://localhost:8000/api/customers
 ### Get a Specific Customer (GET /api/customers/1)
 ```bash
 curl http://localhost:8000/api/customers/1
+```
+
+### Get Premium Customers (GET /api/customers/premium) ⭐
+```bash
+curl http://localhost:8000/api/customers/premium
 ```
 
 ### Find Customers with Minimum Balance (GET /api/customers/balance/min/80000)
@@ -272,45 +290,64 @@ curl -X DELETE http://localhost:8000/api/customers/1
 
 ## Architecture Overview
 
-This project follows a **layered architecture** pattern with separation between Customer and Account:
+This project follows a **clean layered architecture** pattern with separation between Customer and Account:
 
-### 1. **Customer Domain Model** (`customer.py`)
-- Represents the core customer entity
-- Includes constructor, getters, and setters for `id`, `name`, and `account`
-- References an Account object
+### 1. **Domain Layer** (`domain/`)
+- **Customer** (`domain/customer.py`): Core customer entity with constructor, getters, setters for `id`, `name`, and `account`
+- **Account** (`domain/account.py`): Account entity with `id`, `account_type`, and `balance`
 
-### 2. **Account Domain Model** (`account.py`)
-- Represents an account entity
-- Includes constructor, getters, and setters for `id`, `account_type`, and `balance`
-- Independent from customer logic
-
-### 3. **Pydantic Models** (`models.py`)
-- `AccountIn`: Validation schema for account input (account_type, balance)
-- `AccountOut`: Response schema for accounts (id, account_type, balance)
-- `CustomerIn`: Validation schema for customer input (name, account)
-- `CustomerOut`: Response schema for customers (id, name, account)
+### 2. **Pydantic Models** (`models/`)
+- `AccountIn/Out`: Validation and response schemas for accounts
+- `CustomerIn/Out`: Validation and response schemas for customers
 - Automatic type validation and error handling
 
-### 4. **Repository Layer** (`customer_repo.py`, `account_repo.py`)
-- Handles data persistence (in-memory dictionaries)
-- Customer repo methods: `create()`, `find_by_id()`, `find_all()`, `find_balance_minimum()`, `update()`, `delete()`
-- Account repo methods: `create()`, `find_by_id()`, `find_all()`, `update()`, `delete()`
+### 3. **Repository Layer** (`repo/`)
+- **CustomerRepo** (`repo/__init__.py`): CRUD operations + `get_premium()` for premium customers
+- **AccountRepo** (`repo/account_repo.py`): Account persistence
 - Single source of truth for data access
 
-### 5. **Service Layer** (`customer_service.py`)
-- Implements business logic for customers
+### 4. **Service Layer** (`services/`)
+- **CustomerService** (`services/__init__.py`): Business logic
 - Translates between domain objects and Pydantic models
-- Calls repository methods for data access
-- Handles account balance minimum queries
+- Premium customer queries: `get_premium()` (balance > $10,000)
+- Minimum balance queries
 
-### 6. **Controller Layer** (`customer_controller.py`)
-- Defines API routes and HTTP endpoints (documented with HTTP method, endpoint path, full URL, and return type)
-- Handles request/response mapping
-- Implements error handling with appropriate HTTP status codes
+### 5. **Controller Layer** (`controllers/`)
+- **CustomerController** (`controllers/__init__.py`): API routes with proper documentation
+- 8 RESTful endpoints including premium customers
+- Error handling with appropriate HTTP status codes
 
-### 7. **Main Application** (`main.py`)
+### 6. **Main Application** (`main.py`)
 - Initializes FastAPI app
 - Wires up repository, service, and controller dependencies
 - Registers routes
 - Populates 5 default customers with accounts (mix of savings and checking accounts)
 
+---
+
+## 🌟 Premium Customers Feature
+
+### What is Premium?
+A customer is considered **premium** if their account balance exceeds **$10,000**.
+
+### Premium Endpoint
+```
+GET /api/customers/premium
+```
+
+### Default Premium Customers
+All 5 default customers are premium members:
+- Alice Johnson (Savings) - $75,000
+- Bob Smith (Checking) - $65,000
+- Carol Martinez (Savings) - $85,000
+- David Lee (Checking) - $70,000
+- Emma Wilson (Savings) - $80,000
+
+### Query Premium Customers
+```bash
+curl http://localhost:8000/api/customers/premium
+```
+
+Response includes all customers with balance > $10,000 or returns 404 if none found.
+
+---

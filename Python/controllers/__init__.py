@@ -26,6 +26,7 @@ class CustomerController:
         """Setup all customer routes."""
         router.post("", response_model=CustomerOut, status_code=201)(self.create_customer)
         router.get("", response_model=list[CustomerOut])(self.get_all_customers)
+        router.get("/premium", response_model=list[CustomerOut])(self.get_premium)
         router.get("/balance/min/{balance}", response_model=list[CustomerOut])(self.get_balance_minimum)
         router.get("/{customer_id}", response_model=CustomerOut)(self.get_customer)
         router.put("/{customer_id}", response_model=CustomerOut)(self.update_customer)
@@ -85,6 +86,28 @@ class CustomerController:
             List of all customers
         """
         return self.service.get_all_customers()
+
+    # GET
+    # endpoint: /api/customers/premium
+    # Full URL: http://localhost:8000/api/customers/premium OR "BaseURL/api/customers/premium"
+    # Returns: list[CustomerOut] (array of premium customer objects with balance > 10000)
+    async def get_premium(self) -> list[CustomerOut]:
+        """
+        Get all premium customers with account balance greater than 10000.
+
+        Returns:
+            List of all premium customers
+
+        Raises:
+            HTTPException: If no premium customers found
+        """
+        customers = self.service.get_premium()
+        if not customers:
+            raise HTTPException(
+                status_code=404,
+                detail="No premium customers found with account balance greater than $10,000",
+            )
+        return customers
 
     # GET
     # endpoint: /api/customers/{customer_id}

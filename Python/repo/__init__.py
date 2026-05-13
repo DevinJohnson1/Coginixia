@@ -59,6 +59,15 @@ class CustomerRepo:
         """
         return [customer for customer in self._customers.values() if customer.get_account().get_balance() >= balance]
 
+    def get_premium(self) -> list[Customer]:
+        """
+        Get all premium customers (account balance > 10000).
+
+        Returns:
+            A list of all Customer objects with account balance greater than 10000.
+        """
+        return [customer for customer in self._customers.values() if customer.get_account().get_balance() > 10000]
+
     def update(self, customer_id: int, name: str = None, account: Account = None) -> Customer | None:
         """
         Update an existing customer.

@@ -74,6 +74,16 @@ class CustomerService:
         customers = self.repo.find_balance_minimum(balance)
         return [self._customer_to_out(c) for c in customers]
 
+    def get_premium(self) -> list[CustomerOut]:
+        """
+        Retrieve all premium customers (account balance > 10000).
+
+        Returns:
+            List of CustomerOut models that are premium members.
+        """
+        customers = self.repo.get_premium()
+        return [self._customer_to_out(c) for c in customers]
+
     def update_customer(
         self, customer_id: int, customer_in: CustomerIn
     ) -> CustomerOut | None:
