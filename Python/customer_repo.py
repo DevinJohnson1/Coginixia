@@ -49,6 +49,15 @@ class CustomerRepo:
         """
         return list(self._customers.values())
 
+    def find_salary_minimum(self, customer_salary: float) -> list[Customer]:
+        """
+        Get all customers with specified or more salary.
+
+        Returns:
+            A list of all Customer objects with salaries higher than or equal to the specified value.
+        """
+        return [customer for customer in self._customers.values() if customer.get_salary() >= customer_salary]
+
     def update(self, customer_id: int, name: str = None, salary: float = None) -> Customer | None:
         """
         Update an existing customer.

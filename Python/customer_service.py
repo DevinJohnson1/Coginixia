@@ -70,6 +70,26 @@ class CustomerService:
             for c in customers
         ]
 
+    def get_salary_minimum(self, customer_salary: float) -> list[CustomerOut]:
+        """
+        Retrieve all customers with a minimum specified salary or higher.
+
+        Args:
+            customer_salary: The minimum salary threshold
+
+        Returns:
+            List of CustomerOut models that have a salary equal to or higher than the specified value.
+        """
+        customers = self.repo.find_salary_minimum(customer_salary)
+        return [
+            CustomerOut(
+                id=c.get_id(),
+                name=c.get_name(),
+                salary=c.get_salary(),
+            )
+            for c in customers
+        ]
+
     def update_customer(
         self, customer_id: int, customer_in: CustomerIn
     ) -> CustomerOut | None:
@@ -105,5 +125,4 @@ class CustomerService:
             True if deleted, False if not found
         """
         return self.repo.delete(customer_id)
-
 
