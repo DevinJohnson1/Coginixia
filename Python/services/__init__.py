@@ -1,6 +1,8 @@
 """
 Service layer for business logic
 """
+from __future__ import annotations
+from typing import Optional
 from repo import CustomerRepo
 from domain.account import Account
 from models import CustomerIn, CustomerOut, AccountOut
@@ -36,7 +38,7 @@ class CustomerService:
         customer = self.repo.create(customer_in.name, account)
         return self._customer_to_out(customer)
 
-    def get_customer(self, customer_id: int) -> CustomerOut | None:
+    def get_customer(self, customer_id: int) -> Optional[CustomerOut]:
         """
         Retrieve a customer by ID.
 
@@ -85,8 +87,7 @@ class CustomerService:
         return [self._customer_to_out(c) for c in customers]
 
     def update_customer(
-        self, customer_id: int, customer_in: CustomerIn
-    ) -> CustomerOut | None:
+        self, customer_id: int, customer_in: CustomerIn) -> Optional[CustomerOut]:
         """
         Update an existing customer.
 

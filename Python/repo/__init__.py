@@ -1,6 +1,8 @@
 """
 Repository layer for data persistence
 """
+from __future__ import annotations
+from typing import Optional
 from domain.customer import Customer
 from domain.account import Account
 
@@ -29,7 +31,7 @@ class CustomerRepo:
         self._next_id += 1
         return customer
 
-    def find_by_id(self, customer_id: int) -> Customer | None:
+    def find_by_id(self, customer_id: int) -> Optional[Customer]:
         """
         Find a customer by their ID.
 
@@ -68,7 +70,7 @@ class CustomerRepo:
         """
         return [customer for customer in self._customers.values() if customer.get_account().get_balance() > 10000]
 
-    def update(self, customer_id: int, name: str = None, account: Account = None) -> Customer | None:
+    def update(self, customer_id: int, name: str = None, account: Account = None) -> Optional[Customer]:
         """
         Update an existing customer.
 
