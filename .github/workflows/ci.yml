@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.14'
+
+    - name: Install dependencies
+      run: |
+        cd Python
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      env:
+        MONGO_URL: ${{ secrets.MONGO_URL }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+      run: |
+        cd Python
+        pytest utilities/test_service.py -v
+
+    - name: Check code style
+      run: |
+        cd Python
+        python -W all -m py_compile repo/__init__.py
+        python -W all -m py_compile services/__init__.py
+        python -W all -m py_compile main.py
+        python -W all -m py_compile controllers/__init__.py
+        python -W all -m py_compile domain/customer.py
+        python -W all -m py_compile domain/account.py
+        python -W all -m py_compile models/__init__.py
+
