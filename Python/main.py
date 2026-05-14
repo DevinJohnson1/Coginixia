@@ -15,10 +15,12 @@ customer_repo = CustomerRepo()
 customer_service = CustomerService(customer_repo)
 customer_controller = CustomerController(customer_service)
 
-# Seed default customers from utilities
-for i, customer in enumerate(SEED_CUSTOMERS, start=1):
-    account = Account(id=i, account_type=customer["account_type"], balance=customer["balance"])
-    customer_repo.create(customer["name"], account)
+# Seed default customers from utilities (only if database is empty)
+existing_customers = customer_repo.find_all()
+if not existing_customers:
+    for i, customer in enumerate(SEED_CUSTOMERS, start=1):
+        account = Account(id=i, account_type=customer["account_type"], balance=customer["balance"])
+        customer_repo.create(customer["name"], account)
 
 # Include the customer router
 app.include_router(router)
