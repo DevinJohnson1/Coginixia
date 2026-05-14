@@ -14,7 +14,15 @@ from utilities.seed_data import SEED_CUSTOMERS
 @pytest.fixture
 def customer_repo():
     """Create a fresh CustomerRepo instance for each test."""
-    return CustomerRepo()
+    # Clear collections BEFORE creating repo to reset ID counters
+    from repo.mongo_connection import customers_collection, accounts_collection
+    customers_collection.delete_many({})
+    accounts_collection.delete_many({})
+
+    repo = CustomerRepo()
+    yield repo
+    # Cleanup after test
+    repo.clear_all()
 
 
 @pytest.fixture
