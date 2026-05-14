@@ -1,2 +1,6 @@
 __pycache__/
-Python/.env
+.env
+.venv/
+venv/
+*.db
+test.db
