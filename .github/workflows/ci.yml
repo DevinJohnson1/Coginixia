@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, day* ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, day* ]
 
 jobs:
   test:
@@ -42,4 +42,5 @@ jobs:
         python -W all -m py_compile domain/customer.py
         python -W all -m py_compile domain/account.py
         python -W all -m py_compile models/__init__.py
+
 
