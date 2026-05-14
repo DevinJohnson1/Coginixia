@@ -10,6 +10,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
     steps:
     - uses: actions/checkout@v3
 
@@ -26,8 +32,8 @@ jobs:
 
     - name: Run tests
       env:
-        MONGO_URL: ${{ secrets.MONGO_URL }}
-        DB_NAME: ${{ secrets.DB_NAME }}
+        MONGO_URL: mongodb://localhost:27017
+        DB_NAME: testdb
       run: |
         cd Python
         pytest utilities/test_service.py -v
@@ -42,5 +48,3 @@ jobs:
         python -W all -m py_compile domain/customer.py
         python -W all -m py_compile domain/account.py
         python -W all -m py_compile models/__init__.py
-
-
