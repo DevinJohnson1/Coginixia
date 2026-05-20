@@ -6,6 +6,7 @@ from services import CustomerService
 from utilities import SEED_CUSTOMERS
 from controllers import CustomerController, router
 from domain.account import Account
+from mangum import Mangum
 
 # Create the FastAPI app instance
 app = FastAPI(title="Customers RESTful API")
@@ -22,10 +23,13 @@ if not existing_customers:
         account = Account(id=i, account_type=customer["account_type"], balance=customer["balance"])
         customer_repo.create(customer["name"], account)
 
-# Include the customer router
-app.include_router(router)
-
 # Health check endpoint
 @app.get("/")
 def health_check():
     return {"message": "Customers API is running", "status": "healthy"}
+
+# Include the customer router
+app.include_router(router)
+
+# Adding in lambda support
+lambda_handler = Mangum(app, lifespan="off")

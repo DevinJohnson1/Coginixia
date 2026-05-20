@@ -1,0 +1,20 @@
+aws_region           = "us-east-1"
+project_name         = "coginixia"
+environment          = "prod"
+lambda_runtime       = "python3.12"
+lambda_handler       = "main.lambda_handler"
+lambda_function_name = "coginixia-api"
+lambda_zip_path      = "../Python/function.zip"
+api_stage_name       = "prod"
+
+# Existing Lambda execution role ARN (required)
+lambda_role_arn = "arn:aws:iam::123456789012:role/existing-lambda-execution-role"
+
+# These are injected directly into Lambda environment variables.
+# Do not commit real secrets.
+lambda_environment_variables = {
+  MONGO_URI       = "mongodb+srv://example"
+  API_PATH_SECRET = "replace-me-with-random-secret"
+}
+
+

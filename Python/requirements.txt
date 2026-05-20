@@ -4,3 +4,4 @@ pydantic
 pytest
 pymongo[srv]
 python-dotenv
+mangum

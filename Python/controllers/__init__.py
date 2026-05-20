@@ -1,12 +1,17 @@
 """
 Customer controller with FastAPI routes
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from utilities.auth import require_path_secret
 from models import CustomerIn, CustomerOut
 from services import CustomerService
 
 # Create a router for customer endpoints
-router = APIRouter(prefix="/api/customers", tags=["customers"])
+router = APIRouter(
+    prefix="/api/{api_secret}/customers",
+    tags=["customers"],
+    dependencies=[Depends(require_path_secret)],
+)
 
 
 class CustomerController:

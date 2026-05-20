@@ -32,7 +32,7 @@ jobs:
 
     - name: Run tests
       env:
-        MONGO_URL: mongodb://localhost:27017
+        MONGO_URI: mongodb://localhost:27017
         DB_NAME: testdb
       run: |
         cd Python

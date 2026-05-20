@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 DB_NAME = os.getenv("DB_NAME", "coginixia")
 
-client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000)
+client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
 db = client[DB_NAME]
 
 # Collections

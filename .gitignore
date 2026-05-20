@@ -5,3 +5,11 @@ venv/
 *.db
 test.db
 /.idea/
+
+# Terraform local/state files
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/terraform.tfvars
+terraform/*.auto.tfvars
+

@@ -73,6 +73,12 @@ venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
+### 5. Set auth environment variables
+
+```bash
+export API_PATH_SECRET="replace-with-a-long-random-string"
+```
+
 ---
 
 ## Running the App
@@ -94,13 +100,13 @@ uvicorn main:app --reload
 | Method | Path                           | Description                          |
 |--------|--------------------------------|--------------------------------------|
 | GET    | `/`                            | Health check                         |
-| POST   | `/api/customers`               | Create a new customer                |
-| GET    | `/api/customers`               | List all customers                   |
-| GET    | `/api/customers/premium`       | Get premium customers (balance > $10,000)|
-| GET    | `/api/customers/balance/min/n` | Find customers with minimum balance  |
-| GET    | `/api/customers/{id}`          | Get a specific customer              |
-| PUT    | `/api/customers/{id}`          | Update a customer                    |
-| DELETE | `/api/customers/{id}`          | Delete a customer                    |
+| POST   | `/api/{secret}/customers`               | Create a new customer                |
+| GET    | `/api/{secret}/customers`               | List all customers                   |
+| GET    | `/api/{secret}/customers/premium`       | Get premium customers (balance > $10,000)|
+| GET    | `/api/{secret}/customers/balance/min/n` | Find customers with minimum balance  |
+| GET    | `/api/{secret}/customers/{id}`          | Get a specific customer              |
+| PUT    | `/api/{secret}/customers/{id}`          | Update a customer                    |
+| DELETE | `/api/{secret}/customers/{id}`          | Delete a customer                    |
 
 ---
 
@@ -129,9 +135,16 @@ Each account has the following attributes:
 curl http://localhost:8000/
 ```
 
+### Example: List Customers with Path Secret
+```bash
+SECRET="replace-with-your-api-path-secret"
+curl "http://localhost:8000/api/${SECRET}/customers"
+```
+
 ### Create a Customer (POST /api/customers)
 ```bash
-curl -X POST http://localhost:8000/api/customers \
+SECRET="replace-with-your-api-path-secret"
+curl -X POST "http://localhost:8000/api/${SECRET}/customers" \
      -H "Content-Type: application/json" \
      -d '{
        "name": "John Doe",
@@ -144,27 +157,32 @@ curl -X POST http://localhost:8000/api/customers \
 
 ### List All Customers (GET /api/customers)
 ```bash
-curl http://localhost:8000/api/customers
+SECRET="replace-with-your-api-path-secret"
+curl "http://localhost:8000/api/${SECRET}/customers"
 ```
 
 ### Get a Specific Customer (GET /api/customers/1)
 ```bash
-curl http://localhost:8000/api/customers/1
+SECRET="replace-with-your-api-path-secret"
+curl "http://localhost:8000/api/${SECRET}/customers/1"
 ```
 
 ### Get Premium Customers (GET /api/customers/premium)
 ```bash
-curl http://localhost:8000/api/customers/premium
+SECRET="replace-with-your-api-path-secret"
+curl "http://localhost:8000/api/${SECRET}/customers/premium"
 ```
 
 ### Find Customers with Minimum Balance (GET /api/customers/balance/min/80000)
 ```bash
-curl http://localhost:8000/api/customers/balance/min/80000
+SECRET="replace-with-your-api-path-secret"
+curl "http://localhost:8000/api/${SECRET}/customers/balance/min/80000"
 ```
 
 ### Update a Customer (PUT /api/customers/1)
 ```bash
-curl -X PUT http://localhost:8000/api/customers/1 \
+SECRET="replace-with-your-api-path-secret"
+curl -X PUT "http://localhost:8000/api/${SECRET}/customers/1" \
      -H "Content-Type: application/json" \
      -d '{
        "name": "John Doe",
@@ -177,7 +195,8 @@ curl -X PUT http://localhost:8000/api/customers/1 \
 
 ### Delete a Customer (DELETE /api/customers/1)
 ```bash
-curl -X DELETE http://localhost:8000/api/customers/1
+SECRET="replace-with-your-api-path-secret"
+curl -X DELETE "http://localhost:8000/api/${SECRET}/customers/1"
 ```
 ---
 
