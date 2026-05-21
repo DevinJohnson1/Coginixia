@@ -1,0 +1,41 @@
+{
+  "changelists": [
+    {
+      "name": "Default",
+      "files": [
+        "Python/test_auth.py",
+        "react-bankapp/.gitignore",
+        "react-bankapp/README.md",
+        "react-bankapp/eslint.config.js",
+        "react-bankapp/index.html",
+        "react-bankapp/package-lock.json",
+        "react-bankapp/package.json",
+        "react-bankapp/public/favicon.svg",
+        "react-bankapp/public/icons.svg",
+        "react-bankapp/src/App.css",
+        "react-bankapp/src/App.jsx",
+        "react-bankapp/src/assets/hero.png",
+        "react-bankapp/src/assets/react.svg",
+        "react-bankapp/src/assets/vite.svg",
+        "react-bankapp/src/index.css",
+        "react-bankapp/src/main.jsx",
+        "react-bankapp/vite.config.js",
+        ".vscode/changelists.json",
+        "Python/main.py",
+        "Python/repo/__init__.py",
+        "local-start.sh",
+        "Python/models/__init__.py",
+        "Python/repo/mongo_connection.py",
+        "Python/utilities/auth.py",
+        "Python/repo/auth_repo.py",
+        "Python/services/auth_service.py",
+        "Python/controllers/auth_controller.py",
+        "Python/services/__init__.py",
+        "Python/utilities/seed_data.py",
+        "Python/utilities/__init__.py",
+        "Python/controllers/__init__.py"
+      ]
+    }
+  ],
+  "active": "Default"
+}

@@ -77,6 +77,9 @@ pip install -r requirements.txt
 
 ```bash
 export API_PATH_SECRET="replace-with-a-long-random-string"
+export REGISTER_TOKEN="replace-with-shared-register-token"
+export DEFAULT_CUSTOMER_SEED_PASSWORD="replace-with-customer-seed-password"
+export DEFAULT_ADMIN_SEED_PASSWORD="replace-with-admin-seed-password"
 ```
 
 ---
@@ -92,6 +95,14 @@ uvicorn main:app --reload
 | App root           | http://localhost:8000        |
 | Interactive Swagger UI | http://localhost:8000/docs |
 | Alternative ReDoc  | http://localhost:8000/redoc  |
+
+---
+
+## Running Tests
+
+```bash
+pytest utilities/test_backend.py -v
+```
 
 ---
 
@@ -233,4 +244,4 @@ This project follows a **clean layered architecture** pattern with separation be
 - Initializes FastAPI app
 - Wires up repository, service, and controller dependencies
 - Registers routes
-- Populates 5 default customers with accounts (mix of savings and checking accounts)
+- Populates 3 default customers and 2 default admins for startup auth/login flows

@@ -7,7 +7,7 @@ on:
     branches: [ main, day* ]
 
 jobs:
-  test:
+  backend-test:
     runs-on: ubuntu-latest
 
     services:
@@ -17,7 +17,7 @@ jobs:
           - 27017:27017
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -30,13 +30,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run tests
+    - name: Run backend tests
       env:
         MONGO_URI: mongodb://localhost:27017
         DB_NAME: testdb
+        API_PATH_SECRET: test-secret
+        REGISTER_TOKEN: register-token
       run: |
         cd Python
-        pytest utilities/test_service.py -v
+        pytest utilities/test_backend.py -v
 
     - name: Check code style
       run: |
@@ -48,3 +50,37 @@ jobs:
         python -W all -m py_compile domain/customer.py
         python -W all -m py_compile domain/account.py
         python -W all -m py_compile models/__init__.py
+
+  frontend-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: react-bankapp/package-lock.json
+
+    - name: Install frontend dependencies
+      run: |
+        cd react-bankapp
+        npm ci
+
+    - name: Lint frontend
+      run: |
+        cd react-bankapp
+        npm run lint
+
+    - name: Run frontend tests
+      run: |
+        cd react-bankapp
+        npm run test
+
+    - name: Build frontend
+      run: |
+        cd react-bankapp
+        npm run build
+
